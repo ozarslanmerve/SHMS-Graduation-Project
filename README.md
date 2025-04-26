@@ -16,12 +16,15 @@ community.
 o Student Medical Report Submission: Students can easily upload their medical 
 reports to the system, ensuring that all relevant medical information is securely 
 stored and accessible. 
+
 o Instructor Review and Approval: Instructors have the authority to review and 
 manage student medical reports, making the process more efficient and 
 transparent. 
+
 o Automated Workflow: The system automates the workflow for managing 
 medical reports, reducing the administrative burden on university staff and 
-ensuring timely processing. 
+ensuring timely processing.
+
 o Comprehensive Reporting: Instructors can generate comprehensive reports for 
 administrative purposes, allowing for better tracking and analysis of student 
 health data.
