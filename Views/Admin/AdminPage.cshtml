@@ -1,0 +1,147 @@
+﻿@model List<SHMS_Project.Models.User>
+@{
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+    ViewBag.Title = "User Management";
+}
+
+<h2 >Manage Users</h2>
+
+<div style="border: thin solid #ddd; height: stretch; border-radius: 10px; overflow: hidden; padding:20px;">
+    <div class="row" id="rowrprt">
+        <div class="col-md-12 text-center" style="padding-bottom: 10px;">
+            <h2 style="color: black; font-size: 25px;">User Management</h2>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center">
+            <div style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; margin: 0;">
+                <div class="table-responsive" style="margin: 0; padding: 0; background-color:snow">
+                    <table class="table table-sm table-bordered" id="userTable" style="width: 1000px; margin: 0;">
+                        <thead style="background-color: lightgrey;">
+                            <tr style="font-size: 16px; font-weight:500;">
+                                <th>#</th>
+                                <th>Email</th>
+                                <th>Password</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && ViewBag.UserRoles != null && Model.Count == ViewBag.UserRoles.Count)
+                            {
+                                for (int i = 0; i < Model.Count; i++)
+                                {
+                                    var user = Model[i];
+                                    var userRole = ViewBag.UserRoles[i];
+
+                                    <tr style="font-weight: 450;">
+                                        <td>@(i + 1)</td>
+                                        <td>@user.UserName</td>
+                                        <td>@user.UserPassword</td>
+                                        <td>@userRole</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary edit-button" data-user-name="@user.UserName" data-index="@i">Edit</button>
+                                        </td>
+                                    </tr>
+                                }
+                                for (int i = Model.Count; i < 10; i++)
+                                {
+                                    <tr style="font-weight: 450;">
+                                        <td>@(i + 1)</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" id="paginationControls">
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("EditUser", "Admin", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.First().UserName)
+                        @Html.TextBoxFor(model => model.First().UserName, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.First().UserPassword)
+                        @Html.TextBoxFor(model => model.First().UserPassword, new { @class = "form-control" })
+                    </div>
+                  
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var rowsPerPage = 10;
+            var rows = $('#userTable tbody tr');
+            var rowsCount = rows.length;
+            var pageCount = Math.ceil(rowsCount / rowsPerPage);
+            var numbers = $('#paginationControls');
+
+            for (var i = 0; i < pageCount; i++) {
+                numbers.append('<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>');
+            }
+
+            showPage(1);
+
+            numbers.find('li:first-child').addClass('active');
+            numbers.find('li').click(function (e) {
+                e.preventDefault();
+                var pageIndex = $(this).index();
+                showPage(pageIndex + 1);
+                numbers.find('li').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            function showPage(page) {
+                rows.hide();
+                rows.slice((page - 1) * rowsPerPage, page * rowsPerPage).show();
+            }
+
+           $(".edit-button").click(function () {
+    var userName = $(this).data("user-name");
+    var index = $(this).data("index");
+
+    $.ajax({
+        url: '@Url.Action("GetUser", "Admin")',
+        type: 'GET',
+        data: { userName: userName },
+        success: function (data) {
+            $('#editUserModal input[name="UserName"]').val(data.UserName);
+            $('#editUserModal input[name="UserPassword"]').val(data.UserPassword);
+            $('#editUserModal input[name="Role"]').val(data.Role);
+            $('#editUserModal').modal('show');
+        }
+    });
+});
+
+        });
+    </script>
+}

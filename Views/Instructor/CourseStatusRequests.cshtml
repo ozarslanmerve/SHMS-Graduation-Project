@@ -1,0 +1,227 @@
+﻿@model SHMS_Project.Models.CourseStatusRequestsViewModel
+
+@{
+    ViewBag.Title = "Course Status Requests";
+    Layout = "~/Views/Shared/InstructorLayout.cshtml";
+}
+
+<h2>Course Status Change Requests</h2>
+
+<div style="border: thin solid #ddd; height: stretch; border-radius: 10px; overflow: hidden; padding:20px;">
+    <div class="row" id="rowrprt">
+        <div class="col-md-12 text-center" style="padding-bottom: 10px;">
+            <h2 style="color: black; font-size: 25px;">On-Hold Course Status Change Requests</h2>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center">
+            <div style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; margin: 0;">
+                <div class="table-responsive" style="margin: 0; padding: 0;">
+                    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "onHoldForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <table class="table table-sm table-bordered" id="onHoldTable" style="width: 1000px; margin: 0;">
+                            <thead style="background-color: lightgrey;">
+                                <tr style="font-size: 16px; font-weight:500;">
+                                    <th>#</th>
+                                    <th>Course Code</th>
+                                    <th>Requested Status</th>
+                                    <th>Request Date</th>
+                                    <th>Approval Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.OnHoldRequests != null)
+                                {
+                                    int index = 0;
+                                    foreach (var item in Model.OnHoldRequests)
+                                    {
+                                        <tr style="font-weight: 450;">
+                                            <td>@(index + 1)</td>
+                                            <td>@item.CourseCode</td>
+                                            <td>@item.RequestedStatus</td>
+                                            <td>@item.RequestDate.ToString("dd.MM.yyyy")</td>
+                                            <td>@item.ApprovalStatus</td>
+                                        </tr>
+                                        index++;
+                                    }
+                                    for (int i = Model.OnHoldRequests.Count(); i < 10; i++)
+                                    {
+                                        <tr style="font-weight: 450;">
+                                            <td>@(i + 1)</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" id="onHoldPaginationControls">
+        </ul>
+    </div>
+
+    <div class="row justify-content-center" style="margin-top: 20px;">
+        <div class="col-md-6 text-center">
+            <button type="button" class="btn btn-primary" style="margin-bottom:20px;" onclick="showUploadForm()">Upload New Request</button>
+        </div>
+    </div>
+
+    <div id="uploadForm" style="display: none;">
+        <div class="row justify-content-center" style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; margin-left:100px; margin-right:100px;">
+            <div class="col-md-10" id="rowupld">
+                <h2 class="text-center" style="font-size: 25px; padding:25px;">Upload Course Status Change Request</h2>
+                @using (Html.BeginForm("ChangeClassStatus", "Instructor", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "uploadRequestForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("CourseCode", "Course Code", new { @class = "control-label col-md-8" })
+                                <div class="col-md-12">
+                                    @Html.DropDownList("CourseCode", (IEnumerable<SelectListItem>)ViewBag.Courses, "Select Course", htmlAttributes: new { @class = "form-control" })
+                                    <span class="text-danger field-validation-valid" data-valmsg-for="CourseCode" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.Label("Status", "Requested Status", new { @class = "control-label col-md-8" })
+                                <div class="col-md-12">
+                                    @Html.DropDownList("Status", new List<SelectListItem>
+                                    {
+                                        new SelectListItem { Text = "Online", Value = "Online" },
+                                        new SelectListItem { Text = "Face-to-Face", Value = "Face-to-Face" }
+                                    }, "Select Status", htmlAttributes: new { @class = "form-control" })
+                                    <span class="text-danger field-validation-valid" data-valmsg-for="Status" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <input type="submit" style="margin-top:5px; margin-bottom:5px" value="Submit Request" class="btn btn-primary" />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="rowrprt">
+        <div class="col-md-12 text-center" style="padding-bottom: 10px; margin-top:20px; ">
+            <h2 style="color: black; font-size: 25px;">Approved and Rejected Course Status Change Requests</h2>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center">
+            <div style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; margin: 0;">
+                <div class="table-responsive" style="margin: 0; padding: 0;">
+                    <table class="table table-sm table-bordered" id="otherReportsTable" style="width: 1000px; margin: 0;">
+                        <thead style="background-color: lightgrey;">
+                            <tr style="font-size: 16px; font-weight:500;">
+                                <th>#</th>
+                                <th>Course Code</th>
+                                <th>Requested Status</th>
+                                <th>Request Date</th>
+                                <th>Approval Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.OtherRequests != null)
+                            {
+                                int index = 0;
+                                foreach (var item in Model.OtherRequests)
+                                {
+                                    <tr style="font-weight: 450;">
+                                        <td>@(index + 1)</td>
+                                        <td>@item.CourseCode</td>
+                                        <td>@item.RequestedStatus</td>
+                                        <td>@item.RequestDate.ToString("dd.MM.yyyy")</td>
+                                        <td>@item.ApprovalStatus</td>
+                                    </tr>
+                                    index++;
+                                }
+                                for (int i = Model.OtherRequests.Count(); i < 10; i++)
+                                {
+                                    <tr style="font-weight: 450;">
+                                        <td>@(i + 1)</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" id="otherReportsPaginationControls">
+        </ul>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function showUploadForm() {
+            $('#uploadForm').toggle();
+        }
+
+        $(document).ready(function () {
+            function applyPagination(tableId, paginationId) {
+                var rowsPerPage = 10;
+                var rows = $(tableId + ' tbody tr');
+                var rowsCount = rows.length;
+                var pageCount = Math.ceil(rowsCount / rowsPerPage);
+                var numbers = $(paginationId);
+
+                numbers.empty();
+
+                for (var i = 0; i < pageCount; i++) {
+                    numbers.append('<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>');
+                }
+
+                showPage(1, tableId);
+
+                numbers.find('li:first-child').addClass('active');
+                numbers.find('li').click(function (e) {
+                    e.preventDefault();
+                    var pageIndex = $(this).index();
+                    showPage(pageIndex + 1, tableId);
+                    numbers.find('li').removeClass('active');
+                    $(this).addClass('active');
+                });
+
+                function showPage(page, tableId) {
+                    rows.hide();
+                    rows.slice((page - 1) * rowsPerPage, page * rowsPerPage).show();
+                }
+            }
+
+            applyPagination('#onHoldTable', '#onHoldPaginationControls');
+            applyPagination('#otherReportsTable', '#otherReportsPaginationControls');
+
+            $("#uploadRequestForm").submit(function (e) {
+                var isValid = true;
+
+                $("#uploadRequestForm .form-control").each(function () {
+                    if ($(this).val() === "") {
+                        $(this).next("span").text("This field cannot be empty");
+                        isValid = false;
+                    } else {
+                        $(this).next("span").text("");
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

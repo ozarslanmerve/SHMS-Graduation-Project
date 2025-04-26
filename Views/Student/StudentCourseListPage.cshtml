@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "Student Course List Page";
+    Layout = "~/Views/Shared/StudentLayout.cshtml";
+}
+
+<h2>Course List</h2>
+
+<div style="border: thin solid #ddd; height: stretch; border-radius: 10px; overflow: hidden; padding:20px;">
+    <div class="row" id="rowrprt">
+        <div class="col-md-12 text-center" style="padding-bottom: 10px;">
+            <h2 style="color: black; font-size: 25px;">Courses</h2>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center">
+            <div style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; margin: 0;">
+                <div class="table-responsive" style="margin: 0; padding: 0; background-color: snow">
+                    <table class="table table-sm table-bordered" style="width: 1000px; margin: 0;">
+                        <thead style="background-color: lightgrey;">
+                            <tr style="font-size: 16px; font-weight:500;">
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Instructor Name</th>
+                                <th>Term/Year</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var course in Model)
+                            {
+                                <tr style="font-weight: 450;">
+                                    <td>@course.CourseCode</td>
+                                    <td>@course.CourseName</td>
+                                    <td>@course.InstructorName</td>
+                                    <td>@course.CourseTermYear</td>
+                                    <td>@course.CourseStatus</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

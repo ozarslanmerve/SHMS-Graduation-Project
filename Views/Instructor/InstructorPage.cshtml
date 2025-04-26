@@ -1,0 +1,265 @@
+﻿@model SHMS_Project.Models.InstructorPageViewModel
+
+@{
+    ViewBag.Title = "Medical Reports";
+    Layout = "~/Views/Shared/InstructorLayout.cshtml";
+}
+
+<h2>Medical Report Record List</h2>
+
+<div style="border: thin solid #ddd; height: stretch; border-radius: 10px; overflow: hidden; padding:20px;">
+    <div class="row" id="rowrprt">
+        <div class="col-md-12 text-center" style="padding-bottom: 10px;">
+            <h2 style="color: black; font-size: 25px;">On-Hold Medical Reports</h2>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center">
+            <div style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; margin: 0;">
+                <div class="table-responsive" style="margin: 0; padding: 0; background-color:snow">
+                    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "onHoldForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <table class="table table-sm table-bordered" id="onHoldTable" style="width: 1000px; margin: 0;">
+                            <thead style="background-color: lightgrey;">
+                                <tr style="font-size: 16px; font-weight:500;">
+                                    <th>#</th>
+                                    <th>Student No</th>
+                                    <th>Report Start Date</th>
+                                    <th>Report End Date</th>
+                                    <th>Course</th>
+                                    <th>Disease</th>
+                                    <th>Status</th>
+                                    <th>View Report</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.OnHoldReports != null)
+                                {
+                                    int index = 0;
+                                    foreach (var item in Model.OnHoldReports)
+                                    {
+                                        <tr id="row_@index" style="font-weight: 450;">
+                                            <td>@(index + 1)</td>
+                                            <td><a href="@Url.Action("StudentDetails", "Instructor", new { studentNo = item.StudentNo })">@item.StudentNo</a></td>
+                                            <td>@item.MedicalReportStartDate.ToString("dd.MM.yyyy")</td>
+                                            <td>@item.MedicalReportEndDate.ToString("dd.MM.yyyy")</td>
+                                            <td>@item.CourseCode</td>
+                                            <td>@item.DiseaseName</td>
+                                            <td class="medical-report-status">@item.MedicalReportStatus</td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary view-button" onclick="showReport('@item.MedicalReportImage')">View Report</button>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-info change-status-button" data-row-id="@index">Change Status</button>
+                                                <div class="approve-reject-buttons" style="display: none;">
+                                                    <button type="button" class="btn btn-success approve-button" data-medical-report-record-id="@item.MedicalReportRecordId" data-row-id="@index">Approve</button>
+                                                    <button type="button" class="btn btn-danger reject-button" data-medical-report-record-id="@item.MedicalReportRecordId" data-row-id="@index">Reject</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        index++;
+                                    }
+                                    for (int i = Model.OnHoldReports.Count(); i < 10; i++)
+                                    {
+                                        <tr style="font-weight: 450;">
+                                            <td>@(i + 1)</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                            <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" id="onHoldPaginationControls">
+        </ul>
+    </div>
+
+    <div class="row" id="rowrprt">
+        <div class="col-md-12 text-center" style="padding-bottom: 10px;">
+            <h2 style="color: black; font-size: 25px;">Approved and Rejected Medical Report Records</h2>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center">
+            <div style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; margin: 0;">
+                <div class="table-responsive" style="margin: 0; padding: 0; background-color: snow">
+                    <table class="table table-sm table-bordered" id="otherReportsTable" style="width: 1000px; margin: 0;">
+                        <thead style="background-color: lightgrey;">
+                            <tr style="font-size: 16px; font-weight:500;">
+                                <th>#</th>
+                                <th>Student No</th>
+                                <th>Report Start Date</th>
+                                <th>Report End Date</th>
+                                <th>Course</th>
+                                <th>Disease</th>
+                                <th>Status</th>
+                                <th>View Report</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.OtherReports != null)
+                            {
+                                int index = 0;
+                                foreach (var item in Model.OtherReports)
+                                {
+                                    <tr style="font-weight: 450;">
+                                        <td>@(index + 1)</td>
+                                        <td><a href="@Url.Action("StudentDetails", "Instructor", new { studentNo = item.StudentNo })">@item.StudentNo</a></td>
+                                        <td>@item.MedicalReportStartDate.ToString("dd.MM.yyyy")</td>
+                                        <td>@item.MedicalReportEndDate.ToString("dd.MM.yyyy")</td>
+                                        <td>@item.CourseCode</td>
+                                        <td>@item.DiseaseName</td>
+                                        <td>@item.MedicalReportStatus</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary view-button" onclick="showReport('@item.MedicalReportImage')">View Report</button>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                                for (int i = Model.OtherReports.Count(); i < 10; i++)
+                                {
+                                    <tr style="font-weight: 450;">
+                                        <td>@(i + 1)</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" id="otherReportsPaginationControls">
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Medical Report</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="reportImage" src="" class="img-fluid" alt="Medical Report Image">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function showReport(base64Image) {
+            $("#reportImage").attr("src", "data:image/png;base64," + base64Image);
+            $("#reportModal").modal("show");
+        }
+
+        $(document).ready(function () {
+            $(".change-status-button").click(function () {
+                var rowId = $(this).data("row-id");
+                $("#row_" + rowId + " .approve-reject-buttons").toggle();
+            });
+
+            $(".approve-button").click(function () {
+                var medicalReportRecordId = $(this).data("medical-report-record-id");
+                var rowId = $(this).data("row-id");
+                approveRejectMedicalReport(medicalReportRecordId, "Approved", rowId);
+            });
+
+            $(".reject-button").click(function () {
+                var medicalReportRecordId = $(this).data("medical-report-record-id");
+                var rowId = $(this).data("row-id");
+                approveRejectMedicalReport(medicalReportRecordId, "Rejected", rowId);
+            });
+
+            function approveRejectMedicalReport(medicalReportRecordId, status, rowId) {
+                var token = $('[name="__RequestVerificationToken"]').val();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("UpdateMedicalReportStatus", "Instructor")',
+                    data: {
+                        medicalReportRecordId: medicalReportRecordId,
+                        medicalReportStatus: status,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $("#row_" + rowId + " .medical-report-status").text(status);
+                            if (status == "Approved") {
+                                $("#row_" + rowId + " .approve-button").hide();
+                                $("#row_" + rowId + " .reject-button").show();
+                            } else if (status == "Rejected") {
+                                $("#row_" + rowId + " .approve-button").show();
+                                $("#row_" + rowId + " .reject-button").hide();
+                            }
+                            $("#row_" + rowId + " .approve-reject-buttons").show();
+                        } else {
+                            alert("An error occurred: " + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert("An error occurred while updating the medical report status.");
+                    }
+                });
+            }
+
+            function applyPagination(tableId, paginationId) {
+                var rowsPerPage = 10;
+                var rows = $(tableId + ' tbody tr');
+                var rowsCount = rows.length;
+                var pageCount = Math.ceil(rowsCount / rowsPerPage);
+                var numbers = $(paginationId);
+
+                numbers.empty();
+
+                for (var i = 0; i < pageCount; i++) {
+                    numbers.append('<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>');
+                }
+
+                showPage(1);
+
+                numbers.find('li:first-child').addClass('active');
+                numbers.find('li').click(function (e) {
+                    e.preventDefault();
+                    var pageIndex = $(this).index();
+                    showPage(pageIndex + 1);
+                    numbers.find('li').removeClass('active');
+                    $(this).addClass('active');
+                });
+
+                function showPage(page) {
+                    rows.hide();
+                    rows.slice((page - 1) * rowsPerPage, page * rowsPerPage).show();
+                }
+            }
+
+            applyPagination('#onHoldTable', '#onHoldPaginationControls');
+            applyPagination('#otherReportsTable', '#otherReportsPaginationControls');
+        });
+    </script>
+}

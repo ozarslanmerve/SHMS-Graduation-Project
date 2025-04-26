@@ -1,0 +1,43 @@
+﻿@model SHMS_Project.Models.StudentViewModel
+
+@{
+    ViewBag.Title = "Student Details";
+    Layout = "~/Views/Shared/InstructorLayout.cshtml";
+}
+
+<div style="border: thin solid #ddd; height: stretch; border-radius: 10px; overflow: hidden; padding:20px;">
+
+    <div class="container">
+        <h2>Student Details</h2>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-3">Student Name:</dt>
+            <dd class="col-sm-9">@Model.StudentName</dd>
+            <dt class="col-sm-3">Student Number:</dt>
+            <dd class="col-sm-9">@Model.StudentNo</dd>
+            <dt class="col-sm-3">Student Email:</dt>
+            <dd class="col-sm-9">@Model.StudentMail</dd>
+        </dl>
+        <h3>Student Course List</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var course in Model.Courses)
+                {
+                    <tr>
+                        <td>@course.CourseCode</td>
+                        <td>@course.CourseName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div>
+            <a href="@Url.Action("InstructorPage", "Instructor")" class="btn btn-primary">Back to Student Medical Reports</a>
+        </div>
+    </div>
+</div>

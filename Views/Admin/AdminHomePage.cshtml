@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "Admin Home Page";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+    var adminEmail = Session["UserName"]?.ToString();
+    var projectDescription = ViewBag.ProjectDescription;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center" style="padding-bottom: 10px; padding-top: 20px;">
+            <h2 style="color: black; font-size: 25px;">Welcome, @adminEmail!</h2>
+        </div>
+        <div class="col-md-12" style="padding-bottom: 20px;">
+            <p style="font-size: 18px;">@projectDescription</p>
+        </div>
+    </div>
+    <div class="row text-center" style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; padding: 20px;">
+        <div class="col-md-12">
+            <a href="@Url.Action("AdminPage", "Admin")" style="text-decoration: none; color: inherit;">
+                <i class="fas fa-users-cog fa-3x" style="color: #007bff;"></i>
+                <h4 style="color: #007bff">Manage Users</h4>
+                <p>Administer user accounts and roles.</p>
+            </a>
+        </div>
+       
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+}

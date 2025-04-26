@@ -1,0 +1,95 @@
+﻿@model List<SHMS_Project.Models.CourseEpidemicViewModel>
+
+@{
+    ViewBag.Title = "Epidemic Control";
+    Layout = "~/Views/Shared/InstructorLayout.cshtml";
+}
+
+<div class="container">
+    <h2>Epidemic Control</h2>
+    <div class="row">
+        @foreach (var course in Model)
+        {
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-body" style="background-color:gainsboro;">
+                        <h3 class="card-title">@course.CourseName</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container" style="position: relative; height:200px; width:200px; margin: 0 auto;">
+                                    <canvas id="@("chart_" + course.CourseCode)"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <p style="color:red">Percentage of Contagious Diseases: @course.ContagiousPercentage%</p>
+                                <p style="color:forestgreen">Percentage of Non-Contagious Diseases: @course.NonContagiousPercentage%</p>
+                                <p style="color:dodgerblue">Percentage of Students with No Medical Report: @course.NoMedicalReportPercentage%</p>
+                                @if (Convert.ToDouble(course.ContagiousPercentage) >= 50)
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        Contagious disease percentage is equal or above 50%! Consider making this course online.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var courses = @Html.Raw(Json.Encode(Model));
+
+            courses.forEach(function (course) {
+                var ctx = document.getElementById('chart_' + course.CourseCode).getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Contagious', 'Non-Contagious', 'No Medical Report'],
+                        datasets: [{
+                            data: [
+                                parseFloat(course.ContagiousPercentage),
+                                parseFloat(course.NonContagiousPercentage),
+                                parseFloat(course.NoMedicalReportPercentage)
+                            ],
+                            backgroundColor: [
+                                'rgba(255, 0, 0, 0.7)',
+                                'rgba(0, 155, 0, 0.7)',
+                                'rgba(0, 97, 255, 0.5)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 0, 0, 0)',
+                                'rgba(0, 255, 0, 0)',
+                                'rgba(255, 206, 86, 0.6)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Contagious Disease Percentage'
+                            }
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

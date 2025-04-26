@@ -1,0 +1,234 @@
+﻿@model SHMS_Project.Models.FacultyHeadPageViewModel
+
+@{
+    ViewBag.Title = "Course Status Requests";
+    Layout = "~/Views/Shared/FacultyHeadLayout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+
+<h2>Course Status Change Requests</h2>
+
+<div style="border: thin solid #ddd; height: stretch; border-radius: 10px; overflow: hidden; padding:20px;">
+    <div class="row" id="rowrprt">
+        <div class="col-md-12 text-center" style="padding-bottom: 10px;">
+            <h2 style="color: black; font-size: 25px;">On-Hold Course Status Change Requests</h2>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center">
+            <div style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; margin: 0;">
+                <div class="table-responsive" style="margin: 0; padding: 0;">
+                    <table class="table table-sm" id="onHoldTable" style="width: 1000px; margin: 0; border: 1px solid #ddd;">
+                        <thead style="background-color: lightgrey;">
+                            <tr style="font-size: 16px; font-weight:500;">
+                                <th style="border: 1px solid #ddd;">#</th>
+                                <th style="border: 1px solid #ddd;">Course Code</th>
+                                <th style="border: 1px solid #ddd;">Requested Status</th>
+                                <th style="border: 1px solid #ddd;">Request Date</th>
+                                <th style="border: 1px solid #ddd;">Approval Status</th>
+                                <th style="border: 1px solid #ddd;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.OnHoldRequests != null && Model.OnHoldRequests.Count > 0)
+                            {
+                                int index = 0;
+                                foreach (var item in Model.OnHoldRequests)
+                                {
+                                    <tr id="row_@index" style="font-weight: 450;">
+                                        <td style="border: 1px solid #ddd;">@(index + 1)</td>
+                                        <td style="border: 1px solid #ddd;">@item.CourseCode</td>
+                                        <td style="border: 1px solid #ddd;">@item.RequestedStatus</td>
+                                        <td style="border: 1px solid #ddd;">@item.RequestDate.ToString("dd.MM.yyyy")</td>
+                                        <td style="border: 1px solid #ddd;" class="approval-status">@item.ApprovalStatus</td>
+                                        <td style="border: 1px solid #ddd;">
+                                            <button type="button" class="btn btn-success approve-button" data-request-id="@item.RequestId" data-course-code="@item.CourseCode" data-requested-status="@item.RequestedStatus" data-row-id="@index">Approve</button>
+                                            <button type="button" class="btn btn-danger reject-button" data-request-id="@item.RequestId" data-row-id="@index">Reject</button>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                                for (int i = Model.OnHoldRequests.Count; i < 10; i++)
+                                {
+                                    <tr id="row_@i" style="font-weight: 450;">
+                                        <td style="border: 1px solid #ddd;">@(i + 1)</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < 10; i++)
+                                {
+                                    <tr id="row_@i" style="font-weight: 450;">
+                                        <td style="border: 1px solid #ddd;">@(i + 1)</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" id="onHoldPaginationControls">
+        </ul>
+    </div>
+
+    <div class="row" id="rowrprt">
+        <div class="col-md-12 text-center" style="padding-bottom: 10px;">
+            <h2 style="color: black; font-size: 25px;">Approved and Rejected Course Status Change Requests</h2>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center">
+            <div style="border: thin solid #ddd; border-radius: 10px; overflow: hidden; margin: 0;">
+                <div class="table-responsive" style="margin: 0; padding: 0;">
+                    <table class="table table-sm" id="otherReportsTable" style="width: 1000px; margin: 0; border: 1px solid #ddd;">
+                        <thead style="background-color: lightgrey;">
+                            <tr style="font-size: 16px; font-weight:500;">
+                                <th style="border: 1px solid #ddd;">#</th>
+                                <th style="border: 1px solid #ddd;">Course Code</th>
+                                <th style="border: 1px solid #ddd;">Requested Status</th>
+                                <th style="border: 1px solid #ddd;">Request Date</th>
+                                <th style="border: 1px solid #ddd;">Approval Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.OtherRequests != null && Model.OtherRequests.Count > 0)
+                            {
+                                int index = 0;
+                                foreach (var item in Model.OtherRequests)
+                                {
+                                    <tr id="row_@index" style="font-weight: 450;">
+                                        <td style="border: 1px solid #ddd;">@(index + 1)</td>
+                                        <td style="border: 1px solid #ddd;">@item.CourseCode</td>
+                                        <td style="border: 1px solid #ddd;">@item.RequestedStatus</td>
+                                        <td style="border: 1px solid #ddd;">@item.RequestDate.ToString("dd.MM.yyyy")</td>
+                                        <td style="border: 1px solid #ddd;">@item.ApprovalStatus</td>
+                                    </tr>
+                                    index++;
+                                }
+                                for (int i = Model.OtherRequests.Count; i < 10; i++)
+                                {
+                                    <tr id="row_@i" style="font-weight: 450;">
+                                        <td style="border: 1px solid #ddd;">@(i + 1)</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < 10; i++)
+                                {
+                                    <tr id="row_@i" style="font-weight: 450;">
+                                        <td style="border: 1px solid #ddd;">@(i + 1)</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                        <td style="border: 1px solid #ddd;">&nbsp;</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" id="otherReportsPaginationControls">
+        </ul>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $(".approve-button").click(function () {
+                var requestId = $(this).data("request-id");
+                var rowId = $(this).data("row-id");
+                var courseCode = $(this).data("course-code");
+                var requestedStatus = $(this).data("requested-status");
+                updateRequestStatus(requestId, "Approved", courseCode, requestedStatus, rowId);
+            });
+
+            $(".reject-button").click(function () {
+                var requestId = $(this).data("request-id");
+                var rowId = $(this).data("row-id");
+                updateRequestStatus(requestId, "Rejected", null, null, rowId);
+            });
+
+            function updateRequestStatus(requestId, approvalStatus, courseCode, requestedStatus, rowId) {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("UpdateRequestStatus", "FacultyHead")',
+                    data: {
+                        requestId: requestId,
+                        approvalStatus: approvalStatus,
+                        courseCode: courseCode,
+                        requestedStatus: requestedStatus,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $("#row_" + rowId + " .approval-status").text(approvalStatus);
+                            $("#row_" + rowId + " .approve-button").hide();
+                            $("#row_" + rowId + " .reject-button").hide();
+                        } else {
+                            alert("An error occurred: " + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert("An error occurred while updating the request status.");
+                    }
+                });
+            }
+
+            function applyPagination(tableId, paginationId) {
+                var rowsPerPage = 10;
+                var rows = $(tableId + ' tbody tr');
+                var rowsCount = rows.length;
+                var pageCount = Math.ceil(rowsCount / rowsPerPage);
+                var numbers = $(paginationId);
+
+                numbers.empty();
+
+                for (var i = 0; i < pageCount; i++) {
+                    numbers.append('<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>');
+                }
+
+                showPage(1, tableId);
+
+                numbers.find('li:first-child').addClass('active');
+                numbers.find('li').click(function (e) {
+                    e.preventDefault();
+                    var pageIndex = $(this).index();
+                    showPage(pageIndex + 1, tableId);
+                    numbers.find('li').removeClass('active');
+                    $(this).addClass('active');
+                });
+
+                function showPage(page, tableId) {
+                    rows.hide();
+                    rows.slice((page - 1) * rowsPerPage, page * rowsPerPage).show();
+                }
+            }
+
+            applyPagination('#onHoldTable', '#onHoldPaginationControls');
+            applyPagination('#otherReportsTable', '#otherReportsPaginationControls');
+        });
+    </script>
+}
